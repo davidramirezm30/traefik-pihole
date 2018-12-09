@@ -26,7 +26,7 @@ Si observas éste archivo, puedes ver que en el frontend de motioneye hay algo d
  ```
 Esto, lo que hace es que cuando entras en la web motioneye.DOMINIO.duckdns.org, te pide el usuario y contraseña que hayas crado. Para Motioeye lo veo necesario, ya que si no, cualquier persona podría ver tu cámara.
 
-## IMPORTANTE
+### IMPORTANTE
 
 Antes de hacer `docker-compose up -d` os recomiendo hacer lo siguiente, para que no os den errores en el puerto 53:
 ```
