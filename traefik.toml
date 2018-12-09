@@ -1,0 +1,83 @@
+#Traefik Global Configuration
+debug = false
+checkNewVersion = true
+InsecureSkipVerify = true
+logLevel = "ERROR" #DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+#Define the EntryPoint for HTTP and HTTPS
+defaultEntryPoints = ["https","http"]
+#Enable Traefik Dashboard on port 8080 with basic authentication method user and password
+[web]
+address = ":8080"
+[web.auth.basic]
+users = ["USER:TOKEN_PASSWORD"]
+#Define the HTTP port 80 and HTTPS port 443 EntryPoint Enable automatically redirect HTTP to HTTPS
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+#Enable retry sending a request if the network error
+[retry]
+#Define Docker Backend Configuration
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "DOMAIN.duckdns.org"
+watch = true
+exposedbydefault = false
+#Letsencrypt Registration Define the Letsencrypt ACME HTTP challenge
+[acme]
+email = "EMAIL@gmail.com"
+storage = "acme.json"
+entryPoint = "https"
+acmeLoggin = true
+onDemand = true
+OnHostRule = true
+[acme.tlsChallenge]
+  [acme.httpChallenge]
+  entryPoint = "http"
+  
+#Home Assistant
+[file]
+[backends]
+  [backends.backend-homeassistant]
+    [backends.backend-homeassistant.servers]
+      [backends.backend-homeassistant.servers.server-homeassistant-ext]
+        url = "https://IP_OPI:8123"
+        weight = 0
+  [backends.backend-motioneye]
+    [backends.backend-motioneye.servers]
+      [backends.backend-motioneye.servers.server-motioneye0]
+        url = "http://IP_OPI:8765"
+        weight = 1
+  [backends.backend-plex]
+    [backends.backend-plex.servers]
+      [backends.backend-plex.servers.server-plex0]
+        url = "http://IP_OPI:32400"
+        weight = 1
+ 
+[frontends]
+  [frontends.frontend-homeassistant]
+    backend = "backend-homeassistant"
+    passHostHeader = true
+    [frontends.frontend-homeassistant.routes]
+      [frontends.frontend-homeassistant.routes.route-homeassistant-ext]
+        rule = "Host:homeassistant.DOMAIN.duckdns.org"
+  [frontends.frontend-motioneye]
+    backend = "backend-motioneye"
+    passHostHeader = true
+    [frontends.frontend-motioneye.routes]
+      [frontends.frontend-motioneye.routes.route-motioneye0]
+        rule = "Host:motioneye.DOMAIN.duckdns.org"
+    [frontends.frontend-motioneye.auth]
+      [frontends.frontend-motioneye.auth.basic]
+        users = ["USER:TOKEN_PASSWORD"]
+                insecureSkipVerify = true
+  [frontends.frontend-plex]
+    backend = "backend-plex"
+    passHostHeader = true
+    [frontends.frontend-plex.routes]
+      [frontends.frontend-plex.routes.route-plex0]
+        rule = "Host:plex.DOMAIN.duckdns.org"
